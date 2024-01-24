@@ -10,48 +10,36 @@ import SwiftUI
 
 
 struct ContentView: View {
-    @State private var isNight = false
     
-    @State var weatherList: [Weather] = [
-        .init(day: "TUE", dayemoji: "🌥", nightemoji: "⛈" , daytemprature: "33°" ,nighttemprature: "27°"),
-        .init(day: "WED", dayemoji: "⛈", nightemoji: "❄️" , daytemprature: "26°" ,nighttemprature: "21°"),
-        .init(day: "THU", dayemoji: "❄️", nightemoji: "💨" , daytemprature: "29°" ,nighttemprature: "22°"),
-        .init(day: "FRI", dayemoji: "🌩", nightemoji: "🌩" , daytemprature: "28°", nighttemprature: "23°"),
-        .init(day: "SAT", dayemoji: "💨", nightemoji: "🌥" , daytemprature: "29°", nighttemprature: "20°"),
-    ]
+    @StateObject var viewModel = WeatherViewModel()
     
     var body: some View {
         ZStack() {
             // BACKGROUND
-            BackgroundView(isNight: $isNight)
+            BackgroundView(viewModel: viewModel)
             
             
             VStack(spacing: 45) {
                 
                 // 2. Current Status View
-                WeatherMainStatusView(city: isNight ? "Chicago" : "Karachi",
-                                      icon: isNight ? "moon.stars.fill" : "cloud.sun.fill" ,
-                                      temprature:isNight ? "25°" : "36°" )
+                WeatherMainStatusView(viewModel: viewModel)
                 
                 // 3. Week Days
                 HStack(spacing: 22) {
-                    ForEach(weatherList) { weather in
-                        WeatherDayView(weather: weather, isNight : isNight)
+                    ForEach(viewModel.weatherList) { weather in
+                        WeatherDayView(viewModel: viewModel, weather: weather)
                     }
                 }
-
+                
                 VStack{
                     //BUTTON
                     Button {
-                        withAnimation(.spring()) {
-                            isNight.toggle()
-                        }
-                        
+                        viewModel.toggleDisplay()                        
                     } label: {
-                        WeatherButton(title: "Change City", textColor: .blue, backgroundColor: .white)
-                        
-                        
+                        WeatherButton(title: "Change City", textColor: .blue, backgroundColor: .white)                        
                     }
+                    
+                    Toggle("Change Degree", isOn: $viewModel.showTemperatureInCelsius)
                 }
             }
         }
@@ -64,18 +52,15 @@ struct ContentView_Previews: PreviewProvider {
     }
 }
 struct BackgroundView: View {
-   @Binding var isNight : Bool
-   
+    
+    @ObservedObject var viewModel: WeatherViewModel
+    
     var body: some View {
         
-        let colors: [Color] = isNight ? [.black, .gray] : [.blue, .mint]
+        let colors: [Color] = viewModel.isNight ? [.black, .gray] : [.blue, .mint]
         
         LinearGradient(colors: colors, startPoint: UnitPoint.top,
-            endPoint: .bottom)
+                       endPoint: .bottom)
         .ignoresSafeArea()
     }
-    
 }
-
-
-

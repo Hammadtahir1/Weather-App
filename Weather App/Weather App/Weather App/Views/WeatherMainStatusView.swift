@@ -9,9 +9,18 @@ import SwiftUI
 
 struct WeatherMainStatusView: View {
     
+    @ObservedObject var viewModel: WeatherViewModel
+    
     var city: String
     var icon: String
     var temprature: String
+    
+    init(viewModel: WeatherViewModel) {
+        self.viewModel = viewModel
+        self.city = viewModel.isNight ? "Chicago" : "Karachi"
+        self.icon = viewModel.isNight ? "moon.stars.fill" : "cloud.sun.fill"
+        self.temprature = viewModel.isNight ? "25°" : "36°"
+    }
     
     var body: some View {
         VStack {
@@ -30,9 +39,17 @@ struct WeatherMainStatusView: View {
             }
             .frame(width: 70, height: 70)
             
-            Text(temprature)
-                .font(.system(size: 60, weight: .bold))
-                .foregroundColor(.white)
+            if viewModel.showTemperatureInCelsius {
+                Text("\(temprature) C")
+                    .font(.system(size: 60, weight: .bold))
+                    .foregroundColor(.white)
+            }
+            else {
+                Text("\(temprature) F")
+                    .font(.system(size: 60, weight: .bold))
+                    .foregroundColor(.white)
+
+            }
         }
         
     }

@@ -9,8 +9,8 @@ import SwiftUI
 
 struct WeatherDayView: View {
     
+    @ObservedObject var viewModel: WeatherViewModel
     var weather: Weather
-    var isNight: Bool
     
     var body: some View {
         VStack(spacing: 10) {
@@ -18,12 +18,19 @@ struct WeatherDayView: View {
             Text(weather.day)
                 .foregroundColor(.white)
             
-            Text(isNight ? weather.nightemoji : weather.dayemoji)
+            Text(viewModel.isNight ? weather.nightemoji : weather.dayemoji)
                 .font(.system(size: 40, weight: .bold))
             
-            Text(isNight ? weather.nighttemprature : weather.daytemprature)
-                .foregroundColor(.white)
-                .font(.system(size: 22, weight: .bold))
+            if viewModel.showTemperatureInCelsius {
+                Text("\(viewModel.isNight ? weather.nighttemprature : weather.daytemprature) C")
+                    .foregroundColor(.white)
+                    .font(.system(size: 22, weight: .bold))
+            }
+            else {
+                Text("\(viewModel.isNight ? weather.nighttemprature : weather.daytemprature) F")
+                    .foregroundColor(.white)
+                    .font(.system(size: 22, weight: .bold))
+            }
         }
     }
 }
